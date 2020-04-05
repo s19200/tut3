@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using tut3.DAL;
 using tut3.Models;
 
 namespace tut3.Controllers
@@ -13,48 +13,91 @@ namespace tut3.Controllers
     [Route("api/students")]
     public class StudentsController : ControllerBase
     {
-        private readonly IDbService _dbService;
-        public StudentsController(IDbService dbService)
-        {
-            _dbService = dbService;
-        }
+
+
         public IActionResult GetStudents(string orderBy)
         {
-            return Ok(_dbService.GetStudents());
+            var students = new List<Student>();
+            using (var connection = new SqlConnection(@"Data Source = db - mssql; Initial Catalog = s19200; Integrated Security = True"))
+            {
+                using (var command = new SqlCommand())
+                {
+                    command.Connection = connection;
+                    command.CommandText = @" s.FirstName, s.LastName, s.BirthDate, st.Name as Studies, e.Semester 
+                                            from Student s  
+                                            join Enrollment e on e.IdEnrollment = s.IdEnrollment  
+                                            join Studies st on st.IdStudy = e.IdStudy;";
+                    connection.Open();
+                    var rd = command.ExecuteReader();
+                    while (rd.Read())
+                    {
+                        var st = new Student
+                        {
+                            FirstName = rd["FirstName"].ToString(),
+                            LastName = rd["LastName"].ToString(),
+                            Studies = rd["Studies"].ToString(),
+                            DateOfBirth = DateTime.Parse(rd["BirthDate"].ToString()),
+                            Semester = int.Parse(rd["Semester"].ToString())
+                        };
+
+                        students.Add(st);
+                    }
+                }
+            }
+            return Ok();
         }
+
 
         [HttpGet("{id}")]
-        public IActionResult GetStudent(int id)
+        public IActionResult GetSemester(string id)
         {
-            if (id == 1)
+            string semester = null; ;
+
+            using (var connection = new SqlConnection(@"Data Source = db - mssql; Initial Catalog = s19200; Integrated Security = True"))
             {
-                return Ok("Kowalski");
+                using (var command = new SqlCommand())
+                {
+                    command.Connection = connection;
+                    command.CommandText = @"select Semester from Enrollment where IdEnrollment =
+                                            (select idEnrollment from Student where IndexNumber = @id;); ";
+                    connection.Open();
+                    var rd = command.ExecuteReader();
+
+                    if (rd.Read())
+                    {
+                         semester = rd["Semester"].ToString();
+                    }
+
+                    return Ok("student"+id +"is currently on semester"+ semester);
+
+                }
             }
-            else if (id == 2)
-            {
-                return Ok("Malewski");
-            }
-            return NotFound("Student not found");
         }
 
-        [HttpPost]
-        public IActionResult CreateStudent(Student student)
-        {
-            student.IndexNumber = $"s{new Random().Next(1, 20000)}";
 
-            return Ok(student);
-        }
+        /*
+                [HttpPost]
+                public IActionResult CreateStudent(Student student)
+                {
+                    student.IndexNumber = $"s{new Random().Next(1, 20000)}";
 
-        [HttpPut("{id}")]
-        public IActionResult put(int id)
-        {
-            return Ok("Update complete");
-        }
+                    return Ok(student);
+                }
 
-        [HttpDelete("{id}")]
-        public IActionResult delete(int id)
-        {
-            return Ok("Delete completed");
-        }
+                [HttpPut("{id}")]
+                public IActionResult put(int id)
+                {
+                    return Ok("Update complete");
+                }
+
+                [HttpDelete("{id}")]
+                public IActionResult delete(int id)
+                {
+                    return Ok("Delete completed");
+                } */
     }
-}
+
+    }
+
+
+         
