@@ -10,8 +10,7 @@ namespace tut3.Models
             public int IndexNumber { get; set; }
             public string FirstName { get; set; }
             public string LastName { get; set; }
-            public DateTime DateOfBirth { get; set; }
-            public string Studies { get; set; }
-            public int Semester { get; set; }
-        }
+            public DateTime BirthDate { get; set; }
+            public  int idEnrollment { get; set; }
+    }
     }
