@@ -8,6 +8,7 @@ using tut3.Models;
 using tut3.Requests;
 using tut3.Responses;
 
+
 namespace tut3.Services
 {
     public class SqlServerDbService : ControllerBase, IStudentDbService
@@ -121,7 +122,38 @@ namespace tut3.Services
             }
         }
 
-        public IActionResult PromoteStudent(PromoteStudent request)
+        public Student GetStudent(string index)
+        {
+            using (var connection = new SqlConnection(@"Data Source=db-mssql;Initial Catalog=s19200;Integrated Security=True"))
+            {
+                using (var command = new SqlCommand())
+                {
+                    command.Connection = connection;
+                    var transaction = connection.BeginTransaction();
+                    connection.Open();
+                    int index1 = int.Parse(index);
+                    command.CommandText = @"select IndexNember, FirstName, LastName, BirthDate, idEnrollment where IndexNumber = @index";
+                    
+                    var rd = command.ExecuteReader();
+
+                    int _IndexNumber = (int)rd["IndexNumber"];
+                    string _FirstName = rd["FirstName"].ToString();
+                    string _LastName = rd["LastName"].ToString();
+                    DateTime _BirthDate = (DateTime)rd["BirthDate"];
+                    int _idEnrollment = (int)rd["idEnrollment"];
+
+                    var student = new Student { IndexNumber = _IndexNumber, 
+                                                FirstName = _FirstName, 
+                                                LastName = _LastName, 
+                                                BirthDate = _BirthDate, 
+                                                idEnrollment = _idEnrollment };
+                    return student;
+                }
+            }
+        }
+
+
+                public IActionResult PromoteStudent(PromoteStudent request)
         {
             using (var connection = new SqlConnection(@"Data Source=db-mssql;Initial Catalog=s19200;Integrated Security=True"))
             {
@@ -161,5 +193,7 @@ namespace tut3.Services
 
             return Ok(response);
         }
+
+        
     }
 }

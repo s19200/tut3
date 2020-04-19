@@ -12,6 +12,7 @@ namespace tut3.Services
     {
         public IActionResult AddEnrollment(EnrollStudent request);
         public IActionResult PromoteStudent(PromoteStudent request);
+        public Student GetStudent(string index);
 
     }
 }
