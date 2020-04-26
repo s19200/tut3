@@ -12,5 +12,7 @@ namespace tut3.Models
             public string LastName { get; set; }
             public DateTime BirthDate { get; set; }
             public  int idEnrollment { get; set; }
+
+            public string Password { get; set; }
     }
     }

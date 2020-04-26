@@ -1,1 +1,1 @@
-﻿
+﻿Method: GET; Endpoint path: /favicon.ico; Body: Microsoft.AspNetCore.WebUtilities.FileBufferingReadStream; Query string: 

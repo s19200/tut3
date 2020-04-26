@@ -13,31 +13,31 @@ namespace tut3.Services
 {
     public class SqlServerDbService : ControllerBase, IStudentDbService
     {
-        //public IEnumerable<Student> GetStudents()
-        //{
-        //    var students = new List<Student>();
-        //    using (var connection = new SqlConnection(@"Data Source=db-mssql;Initial Catalog=s19200;Integrated Security=True"))
-        //    {
-        //        using (var command = new SqlCommand())
-        //        {
-        //            command.Connection = connection;
-        //            command.CommandText = @"select s.IndexNumber, s.FirstName, s.LastName from Student s;";
-        //            connection.Open();
-        //            var rd = command.ExecuteReader();
-        //            while (rd.Read())
-        //            {
-        //                var st = new Student
-        //                {
-        //                    IndexNumber = int.Parse(rd["IndexNumber"].ToString()),
-        //                    FirstName = rd["FirstName"].ToString(),
-        //                    LastName = rd["LastName"].ToString()
-        //                };
-        //                students.Add(st);
-        //            }
-        //        }
-        //    }
-        //    return students;
-        //}
+        public IEnumerable<Student> GetStudents()
+        {
+            var students = new List<Student>();
+            using (var connection = new SqlConnection(@"Data Source=db-mssql;Initial Catalog=s19200;Integrated Security=True"))
+            {
+                using (var command = new SqlCommand())
+                {
+                    command.Connection = connection;
+                    command.CommandText = @"select s.IndexNumber, s.FirstName, s.LastName from Student s;";
+                    connection.Open();
+                    var rd = command.ExecuteReader();
+                    while (rd.Read())
+                    {
+                        var st = new Student
+                        {
+                            IndexNumber = int.Parse(rd["IndexNumber"].ToString()),
+                            FirstName = rd["FirstName"].ToString(),
+                            LastName = rd["LastName"].ToString()
+                        };
+                        students.Add(st);
+                    }
+                }
+            }
+            return students;
+        }
         public IActionResult AddEnrollment(EnrollStudent request)
         {
             using (var connection = new SqlConnection(@"Data Source=db-mssql;Initial Catalog=s19200;Integrated Security=True"))
@@ -153,7 +153,7 @@ namespace tut3.Services
         }
 
 
-                public IActionResult PromoteStudent(PromoteStudent request)
+        public IActionResult PromoteStudent(PromoteStudent request)
         {
             using (var connection = new SqlConnection(@"Data Source=db-mssql;Initial Catalog=s19200;Integrated Security=True"))
             {
@@ -194,6 +194,6 @@ namespace tut3.Services
             return Ok(response);
         }
 
-        
+
     }
 }
